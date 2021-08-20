@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ErrorCekOngkir;
+use App\Http\Resources\CityResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\City;
@@ -12,31 +14,35 @@ class OngkirController extends Controller
     public function index(Request $request)
     {
         try {
+            $origin = '';
+            $destination = '';
+            $weight = '';
+            $courier = '';
+            $results = [];
+
             if ($request->origin && $request->destination && $request->weight && $request->courier) {
                 $origin = $request->origin;
                 $destination = $request->destination;
                 $weight = $request->weight;
                 $courier = $request->courier;
 
-                $response = Http::asForm()->withHeaders([
-                    'key' => 'aa8e37a4d877ecdf7af0807dafde9670'
-                ])->post('https://api.rajaongkir.com/starter/cost', [
+                $params = [
                     'origin' => $origin,
                     'destination' => $destination,
                     'weight' => $weight,
                     'courier' => $courier,
-                ]);
+                ];
+
+                $response = Http::asForm()->withHeaders([
+                    'key' => 'aa8e37a4d877ecdf7af0807dafde9670'
+                ])->post('https://api.rajaongkir.com/starter/cost', $params);
 
                 $results = $response['rajaongkir']['results'][0]['costs'];
             } else {
-                $origin = '';
-                $destination = '';
-                $weight = '';
-                $courier = '';
-                $results = [];
+                // throw new ErrorCekOngkir('Data tidak tersedia' . $request);
             }
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+            // dd($exception->getMessage());
             return view('404');
         }
 
@@ -53,5 +59,7 @@ class OngkirController extends Controller
         $cities = City::where('province_id', '=', $id)->pluck('city_name', 'id');
 
         return json_encode($cities);
+
+        // return (new CityResource($cities));
     }
 }

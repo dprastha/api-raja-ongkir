@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class OngkirResource extends JsonResource
+class CityResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,11 @@ class OngkirResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'service' => $this->service,
-            'description' => $this->description,
-            'email' => $this->email,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'city_id' => $this->id,
+            'province_id' => $this->province_id,
+            'type' => $this->type,
+            'city_name' => $this->city_name,
+            'postal_code' => $this->postal_code,
         ];
     }
 }
